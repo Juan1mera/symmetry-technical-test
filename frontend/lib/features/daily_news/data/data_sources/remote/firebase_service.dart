@@ -9,34 +9,66 @@ class FirebaseService {
   
   Future<String> uploadImage(File file) async {
     try {
+      print("Starting image upload...");
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       Reference ref = _storage.ref().child('media/articles/$fileName');
-      UploadTask uploadTask = ref.putFile(file);
+
+      print("Getting mime type...");
+      // For simplicity we assume jpeg/png or let firebase detect, but passing explicit metadata fixes the NPE bug
+      SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+      
+      UploadTask uploadTask = ref.putFile(file, metadata);
+      
+      print("Waiting for upload...");
       TaskSnapshot snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
+      print("Upload finished. Getting URL...");
+      String url = await snapshot.ref.getDownloadURL();
+      print("Got URL: $url");
+      return url;
     } catch (e) {
+      print("Error uploading image: $e");
       throw Exception('Failed to upload image: $e');
     }
   }
 
   Future<void> addArticle(ArticleModel article) async {
     try {
-      // Use set instead of add to control ID if needed, but add is fine for auto-ID
-      // However, we need to map the model to JSON. 
-      // The schema requires specific fields.
-      
+      print("Adding article to Firestore: ${article.title}");
       Map<String, dynamic> articleData = {
         'title': article.title,
         'content': article.content,
         'category': article.category,
-        'thumbnailURL': article.urlToImage, // Mapping urlToImage to thumbnailURL
-        'authorId': article.author, // Assuming author field in entity holds the ID
-        'createdAt': FieldValue.serverTimestamp(), // Use server timestamp
+        'thumbnailURL': article.urlToImage,
+        'authorId': article.author,
+        'createdAt': FieldValue.serverTimestamp(),
       };
 
       await _firestore.collection('articles').add(articleData);
     } catch (e) {
       throw Exception('Failed to add article: $e');
+    }
+  }
+
+  Future<List<ArticleModel>> getArticles() async {
+    try {
+      QuerySnapshot snapshot = await _firestore.collection('articles').orderBy('createdAt', descending: true).get();
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        
+        return ArticleModel(
+          id: data.containsKey('id') ? data['id'] : null, 
+          author: data['authorId'],
+          title: data['title'],
+          description: data['content'],
+          url: '', 
+          urlToImage: data['thumbnailURL'],
+          publishedAt: data['createdAt'] != null ? (data['createdAt'] as Timestamp).toDate().toString() : '',
+          content: data['content'],
+          category: data['category'],
+        );
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch articles: $e');
     }
   }
 }

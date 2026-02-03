@@ -21,26 +21,10 @@ class ArticleRepositoryImpl implements ArticleRepository {
   @override
   Future<DataState<List<ArticleModel>>> getNewsArticles() async {
    try {
-    final httpResponse = await _newsApiService.getNewsArticles(
-      apiKey:newsAPIKey,
-      country:countryQuery,
-      category:categoryQuery,
-    );
-
-    if (httpResponse.response.statusCode == HttpStatus.ok) {
-      return DataSuccess(httpResponse.data);
-    } else {
-      return DataFailed(
-        DioException(
-          error: httpResponse.response.statusMessage,
-          response: httpResponse.response,
-          type: DioExceptionType.badResponse,
-          requestOptions: httpResponse.response.requestOptions
-        )
-      );
-    }
-   } on DioException catch(e){
-    return DataFailed(e);
+    final articles = await _firebaseService.getArticles();
+    return DataSuccess(articles);
+   } catch (e){
+    return DataFailed(e is Exception ? e : Exception(e.toString()));
    }
   }
 
