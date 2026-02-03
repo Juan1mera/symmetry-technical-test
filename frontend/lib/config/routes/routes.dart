@@ -6,6 +6,9 @@ import '../../features/daily_news/presentation/pages/home/daily_news.dart';
 import '../../features/daily_news/presentation/pages/saved_article/saved_article.dart';
 
 import '../../features/daily_news/presentation/pages/create_article/create_article.dart';
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/auth/presentation/pages/profile_page.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -21,6 +24,15 @@ class AppRoutes {
 
       case '/CreateArticle':
         return _materialRoute(const CreateArticleScreen());
+      
+      case '/Login':
+        return _materialRoute(const LoginPage());
+
+      case '/Register':
+        return _materialRoute(const RegisterPage());
+
+      case '/Profile':
+        return _materialRoute(const ProfilePage());
         
       default:
         return _materialRoute(const DailyNews());
