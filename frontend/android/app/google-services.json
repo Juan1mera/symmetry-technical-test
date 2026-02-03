@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "534230923254",
+    "project_id": "prueba-symmetry-app",
+    "storage_bucket": "prueba-symmetry-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534230923254:android:a259b1afd1dc4c95b2f9d7",
+        "android_client_info": {
+          "package_name": "com.example.news_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVEXvq7qKiQZvuCJJhuG8JIPgydpBXR5Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
