@@ -13,7 +13,7 @@ service cloud.firestore {
         data.thumbnailURL is string &&
         
         // 3. Integridad de datos (Metadata)
-        // data.authorId == request.auth.uid && // COMENTADO PARA TESTING
+        data.authorId == request.auth.uid && 
         data.createdAt is timestamp;
     }
 
@@ -21,11 +21,11 @@ service cloud.firestore {
       // Cualquiera puede leer noticias
       allow read: if true;
       
-      // Permitir crear si es válido (sin auth para test)
-      allow create: if isValidArticle();
+      // Permitir crear si es válido y autenticado
+      allow create: if request.auth != null && isValidArticle();
       
-      // Permitir update/delete a cualquiera para test
-      allow update, delete: if true;
+      // Permitir update/delete solo al dueño
+      allow update, delete: if request.auth != null && resource.data.authorId == request.auth.uid;
     }
   }
 }
