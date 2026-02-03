@@ -65,6 +65,7 @@ class DailyNews extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.pushNamed(context, '/CreateArticle');
+          if (!context.mounted) return;
           context.read<RemoteArticlesBloc>().add(const GetArticles());
         },
         child: const Icon(Icons.add),
