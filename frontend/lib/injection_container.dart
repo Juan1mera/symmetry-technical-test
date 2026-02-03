@@ -10,6 +10,7 @@ import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'core/constants/constants.dart';
 
 final sl = GetIt.instance;
 
@@ -22,7 +23,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<Dio>(Dio());
 
   // Dependencies
-  sl.registerSingleton<NewsApiService>(NewsApiService(sl()));
+  sl.registerSingleton<NewsApiService>(NewsApiService(sl(), baseUrl: newsAPIBaseURL));
 
   sl.registerSingleton<ArticleRepository>(
     ArticleRepositoryImpl(sl(),sl())
