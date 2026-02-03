@@ -14,6 +14,12 @@ import 'features/daily_news/domain/usecases/create_article.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'features/daily_news/presentation/bloc/article/create/create_article_cubit.dart';
 import 'core/constants/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'features/auth/data/repositories/auth_repository_impl.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/domain/usecases/login_usecase.dart';
+import 'features/auth/domain/usecases/register_usecase.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -65,8 +71,26 @@ Future<void> initializeDependencies() async {
   );
   
   sl.registerFactory<CreateArticleCubit>(
-    ()=> CreateArticleCubit(sl())
+    ()=> CreateArticleCubit(sl(), sl())
   );
 
+  // Auth
+  sl.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
+
+  sl.registerSingleton<AuthRepository>(
+    AuthRepositoryImpl(sl())
+  );
+
+  sl.registerSingleton<LoginUseCase>(
+    LoginUseCase(sl())
+  );
+
+  sl.registerSingleton<RegisterUseCase>(
+    RegisterUseCase(sl())
+  );
+
+  sl.registerFactory<AuthBloc>(
+    () => AuthBloc(sl(), sl())
+  );
 
 }
