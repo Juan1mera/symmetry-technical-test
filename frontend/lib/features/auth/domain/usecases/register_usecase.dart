@@ -10,13 +10,25 @@ class RegisterUseCase implements UseCase<DataState<UserEntity>, RegisterParams> 
 
   @override
   Future<DataState<UserEntity>> call({RegisterParams? params}) {
-    return _authRepository.register(params!.email, params.password);
+    return _authRepository.register(
+      params!.email,
+      params.password,
+      params.firstName,
+      params.lastName,
+    );
   }
 }
 
 class RegisterParams {
   final String email;
   final String password;
+  final String firstName;
+  final String lastName;
 
-  RegisterParams({required this.email, required this.password});
+  RegisterParams({
+    required this.email,
+    required this.password,
+    required this.firstName,
+    required this.lastName,
+  });
 }

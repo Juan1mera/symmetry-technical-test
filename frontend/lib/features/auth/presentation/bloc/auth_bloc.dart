@@ -30,7 +30,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
     // print("AuthBloc: onRegister called");
     emit(const AuthLoading());
-    final result = await _registerUseCase(params: RegisterParams(email: event.email, password: event.password));
+    final result = await _registerUseCase(
+      params: RegisterParams(
+        email: event.email,
+        password: event.password,
+        firstName: event.firstName,
+        lastName: event.lastName,
+      ),
+    );
     if (result is DataSuccess) {
       // print("AuthBloc: Register Success");
       emit(AuthSuccess(result.data!));
