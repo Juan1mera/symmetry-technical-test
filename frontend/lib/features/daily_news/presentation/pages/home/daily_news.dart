@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_event.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../../../injection_container.dart';
 
 import '../../../domain/entities/article.dart';
 import '../../widgets/article_tile.dart';
@@ -23,6 +25,12 @@ class DailyNews extends StatelessWidget {
         style: TextStyle(color: Colors.black),
       ),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.person, color: Colors.black),
+          onPressed: () {
+            Navigator.pushNamed(context, '/Profile');
+          },
+        ),
         GestureDetector(
           onTap: () => _onShowSavedArticlesViewTapped(context),
           child: const Padding(
@@ -59,11 +67,15 @@ class DailyNews extends StatelessWidget {
               },
             );
           }
-          return const SizedBox();
+           return const SizedBox();
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          if (sl<FirebaseAuth>().currentUser == null) {
+              Navigator.pushNamed(context, '/Login');
+              return;
+          }
           await Navigator.pushNamed(context, '/CreateArticle');
           if (!context.mounted) return;
           context.read<RemoteArticlesBloc>().add(const GetArticles());
