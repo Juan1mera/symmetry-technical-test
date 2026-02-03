@@ -27,5 +27,17 @@ service cloud.firestore {
       // Permitir update/delete solo al dueño
       allow update, delete: if request.auth != null && resource.data.authorId == request.auth.uid;
     }
+
+    // User profile documents
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create/update their own profile
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+      
+      // No deletion of user profiles
+      allow delete: if false;
+    }
   }
 }
