@@ -15,11 +15,16 @@ import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.d
 import 'features/daily_news/presentation/bloc/article/create/create_article_cubit.dart';
 import 'core/constants/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/register_usecase.dart';
+import 'features/auth/domain/usecases/update_profile_usecase.dart';
+import 'features/auth/domain/usecases/upload_profile_image_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/bloc/profile_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -76,9 +81,11 @@ Future<void> initializeDependencies() async {
 
   // Auth
   sl.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
+  sl.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
+  sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
 
   sl.registerSingleton<AuthRepository>(
-    AuthRepositoryImpl(sl())
+    AuthRepositoryImpl(sl(), sl(), sl())
   );
 
   sl.registerSingleton<LoginUseCase>(
@@ -89,8 +96,20 @@ Future<void> initializeDependencies() async {
     RegisterUseCase(sl())
   );
 
+  sl.registerSingleton<UpdateProfileUseCase>(
+    UpdateProfileUseCase(sl())
+  );
+
+  sl.registerSingleton<UploadProfileImageUseCase>(
+    UploadProfileImageUseCase(sl())
+  );
+
   sl.registerFactory<AuthBloc>(
     () => AuthBloc(sl(), sl())
+  );
+
+  sl.registerFactory<ProfileBloc>(
+    () => ProfileBloc(sl(), sl())
   );
 
 }
