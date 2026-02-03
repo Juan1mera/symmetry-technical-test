@@ -30,7 +30,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<FirebaseService>(FirebaseService());
 
   sl.registerSingleton<ArticleRepository>(
-    ArticleRepositoryImpl(sl(), sl(), sl())
+    ArticleRepositoryImpl(sl(), sl())
   );
   
   //UseCases

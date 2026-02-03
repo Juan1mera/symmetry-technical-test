@@ -12,7 +12,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   final AppDatabase _appDatabase;
   final FirebaseService _firebaseService;
   
-  ArticleRepositoryImpl(this._appDatabase, this._firebaseService, Object object);
+  ArticleRepositoryImpl(this._appDatabase, this._firebaseService);
   
   @override
   Future<DataState<List<ArticleModel>>> getNewsArticles() async {
