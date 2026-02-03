@@ -3,10 +3,13 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/entities/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/create_article.dart';
 import 'create_article_state.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class CreateArticleCubit extends Cubit<CreateArticleState> {
   final CreateArticleUseCase _createArticleUseCase;
+  final FirebaseAuth _firebaseAuth;
 
-  CreateArticleCubit(this._createArticleUseCase) : super(CreateArticleInitial());
+  CreateArticleCubit(this._createArticleUseCase, this._firebaseAuth) : super(CreateArticleInitial());
 
   Future<void> submitArticle({
     required String title,
@@ -16,12 +19,17 @@ class CreateArticleCubit extends Cubit<CreateArticleState> {
   }) async {
     emit(CreateArticleLoading());
     try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+          emit(const CreateArticleError("User not logged in"));
+          return;
+      }
       final article = ArticleEntity(
         title: title,
         content: content,
         category: category,
         urlToImage: imagePath,
-        author: 'current_user', // Replace with actual user ID if auth is implemented
+        author: user.uid, 
         publishedAt: DateTime.now().toIso8601String(),
       );
 
