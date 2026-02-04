@@ -23,7 +23,7 @@ class AppRoutes {
         return _materialRoute(const SavedArticles());
 
       case '/CreateArticle':
-        return _materialRoute(const CreateArticleScreen());
+        return _materialRoute(CreateArticleScreen(articleToEdit: settings.arguments as ArticleEntity?));
       
       case '/Login':
         return _materialRoute(const LoginPage());

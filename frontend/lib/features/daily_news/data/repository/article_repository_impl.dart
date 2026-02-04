@@ -72,4 +72,48 @@ class ArticleRepositoryImpl implements ArticleRepository {
       throw Exception('Failed to create article: $e');
     }
   }
+
+
+  @override
+  Future<void> deleteRemoteArticle(ArticleEntity article) {
+    if (article.documentId != null) {
+      return _firebaseService.deleteArticle(article.documentId!);
+    } else {
+      throw Exception('Article does not have a document ID');
+    }
+  }
+
+  @override
+  Future<void> editRemoteArticle(ArticleEntity article) async {
+      String? imageUrl = article.urlToImage;
+      
+      // If the image is a local file path (starts with /), upload it. 
+      // Assuming http means remote.
+      if (imageUrl != null && !imageUrl.startsWith('http') && imageUrl.isNotEmpty) {
+         File imageFile = File(imageUrl);
+         if (await imageFile.exists()) {
+           imageUrl = await _firebaseService.uploadImage(imageFile);
+         }
+      }
+
+      ArticleModel updatedArticle = ArticleModel.fromEntity(article);
+      // We need to re-create the model with the new image URL if it changed
+      if (imageUrl != article.urlToImage) {
+        updatedArticle = ArticleModel(
+          id: article.id,
+          documentId: article.documentId,
+          author: article.author,
+          authorId: article.authorId,
+          title: article.title,
+          description: article.description,
+          url: article.url,
+          urlToImage: imageUrl,
+          publishedAt: article.publishedAt,
+          content: article.content,
+          category: article.category
+        );
+      }
+
+    return _firebaseService.updateArticle(updatedArticle);
+  }
 }

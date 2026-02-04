@@ -79,10 +79,10 @@ class DailyNews extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.textoSecundario.withOpacity(0.1)),
+          border: Border.all(color: AppColors.textoSecundario.withValues(alpha: .1)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: .05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -112,12 +112,12 @@ class DailyNews extends StatelessWidget {
                     return const Center(child: CupertinoActivityIndicator());
                   }
                   if (state is RemoteArticlesError) {
-                    return Center(
+                    return const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.refresh, size: 50, color: AppColors.textoSecundario),
-                          const SizedBox(height: 10),
+                          Icon(Icons.refresh, size: 50, color: AppColors.textoSecundario),
+                          SizedBox(height: 10),
                           Text("Error cargando noticias", style: TextStyle(color: AppColors.textoSecundario)),
                         ],
                       ),
@@ -131,11 +131,17 @@ class DailyNews extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       itemCount: state.articles!.length,
                       itemBuilder: (context, index) {
+                        final currentUser = sl<FirebaseAuth>().currentUser;
+                        final currentUserId = currentUser?.uid;
+
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: ArticleWidget(
                             article: state.articles![index],
+                            isOwner: currentUserId != null && state.articles![index].authorId == currentUserId,
                             onArticlePressed: (article) => _onArticlePressed(context, article),
+                            onEdit: (article) => _onEditArticle(context, article),
+                            onRemove: (article) => _onDeleteArticle(context, article),
                           ),
                         );
                       },
@@ -170,5 +176,37 @@ class DailyNews extends StatelessWidget {
 
   void _onShowSavedArticlesViewTapped(BuildContext context) {
     Navigator.pushNamed(context, '/SavedArticles');
+  }
+
+  void _onEditArticle(BuildContext context, ArticleEntity article) async {
+    await Navigator.pushNamed(context, '/CreateArticle', arguments: article);
+    if (!context.mounted) return;
+    context.read<RemoteArticlesBloc>().add(const GetArticles());
+  }
+
+  void _onDeleteArticle(BuildContext context, ArticleEntity article) {
+    if (article.documentId == null) return;
+    
+    // Show confirmation dialog before deleting
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar publicación'),
+        content: const Text('¿Estás seguro de que quieres eliminar esta publicación?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: AppColors.textoSecundario)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<RemoteArticlesBloc>().add(DeleteArticle(article));
+            },
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 }

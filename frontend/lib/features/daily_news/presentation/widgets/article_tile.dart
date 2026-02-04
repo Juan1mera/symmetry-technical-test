@@ -7,16 +7,21 @@ import '../../domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
-  final bool? isRemovable;
+  final bool? isRemovable; // Eliminar para los articulos guardaos
+  final bool isOwner; // editar y eliminar para artiuclos
   final void Function(ArticleEntity article)? onRemove;
+  final void Function(ArticleEntity article)? onEdit;
   final void Function(ArticleEntity article)? onArticlePressed;
 
   const ArticleWidget({
     Key? key,
     this.article,
     this.onArticlePressed,
+
     this.isRemovable = false,
+    this.isOwner = false,
     this.onRemove,
+    this.onEdit,
   }) : super(key: key);
 
   @override
@@ -136,8 +141,62 @@ class ArticleWidget extends StatelessWidget {
             ),
           ),
         
-        // Remove button
-        if (isRemovable!)
+
+        
+        // Owner Actions (Edit / Delete)
+        if (isOwner)
+          Positioned(
+            top: 12,
+            right: 12,
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'edit' && onEdit != null) onEdit!(article!);
+                if (value == 'delete' && onRemove != null) onRemove!(article!);
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit, color: AppColors.textoPrincipal, size: 20),
+                      SizedBox(width: 8),
+                      Text('Editar'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: AppColors.secundario, size: 20),
+                      SizedBox(width: 8),
+                      Text('Eliminar', style: TextStyle(color: AppColors.secundario)),
+                    ],
+                  ),
+                ),
+              ],
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.more_vert,
+                  color: AppColors.textoPrincipal,
+                  size: 18,
+                ),
+              ),
+            ),
+          )
+        else if (isRemovable!)
           Positioned(
             top: 12,
             right: 12,

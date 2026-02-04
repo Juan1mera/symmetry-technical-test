@@ -10,8 +10,11 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_state.dart';
 import 'package:news_app_clean_architecture/injection_container.dart';
 
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+
 class CreateArticleScreen extends StatefulWidget {
-  const CreateArticleScreen({Key? key}) : super(key: key);
+  final ArticleEntity? articleToEdit;
+  const CreateArticleScreen({Key? key, this.articleToEdit}) : super(key: key);
 
   @override
   State<CreateArticleScreen> createState() => _CreateArticleScreenState();
@@ -24,6 +27,17 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
   final _categoryController = TextEditingController(); 
   String? _imagePath;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.articleToEdit != null) {
+      _titleController.text = widget.articleToEdit!.title ?? '';
+      _contentController.text = widget.articleToEdit!.content ?? ''; 
+      _categoryController.text = widget.articleToEdit!.category ?? '';
+      _imagePath = widget.articleToEdit!.urlToImage;
+    }
+  }
 
   @override
   void dispose() {
@@ -44,12 +58,22 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
 
   void _submit(BuildContext context) {
     if (_formKey.currentState!.validate()) {
-      context.read<CreateArticleCubit>().submitArticle(
-        title: _titleController.text,
-        content: _contentController.text,
-        category: _categoryController.text.isEmpty ? 'General' : _categoryController.text,
-        imagePath: _imagePath,
-      );
+      if (widget.articleToEdit != null) {
+          context.read<CreateArticleCubit>().updateArticle(
+            originalArticle: widget.articleToEdit!,
+            title: _titleController.text,
+            content: _contentController.text,
+            category: _categoryController.text.isEmpty ? 'General' : _categoryController.text,
+            imagePath: _imagePath,
+          );
+      } else {
+          context.read<CreateArticleCubit>().submitArticle(
+            title: _titleController.text,
+            content: _contentController.text,
+            category: _categoryController.text.isEmpty ? 'General' : _categoryController.text,
+            imagePath: _imagePath,
+          );
+      }
     }
   }
 
@@ -62,7 +86,7 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
           if (state is CreateArticleSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('¡Artículo publicado exitosamente!'),
+                content: Text(widget.articleToEdit != null ? '¡Artículo actualizado exitosamente!' : '¡Artículo publicado exitosamente!'),
                 backgroundColor: AppColors.secundario,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
@@ -87,7 +111,7 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
         child: Scaffold(
           backgroundColor: AppColors.principal,
           appBar: AppBar(
-            title: const Text('Publicar Artículo'),
+            title: Text(widget.articleToEdit != null ? 'Editar Artículo' : 'Publicar Artículo'),
             backgroundColor: AppColors.principal,
           ),
           body: BlocBuilder<CreateArticleCubit, CreateArticleState>(
@@ -119,10 +143,10 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
 
                       const SizedBox(height: 24),
 
-                      const Center(
+                      Center(
                         child: Text(
-                          'Crear Nuevo Artículo',
-                          style: TextStyle(
+                          widget.articleToEdit != null ? 'Editar Artículo' : 'Crear Nuevo Artículo',
+                          style: const TextStyle(
                             fontFamily: 'Butler',
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
@@ -190,12 +214,19 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(16),
-                              child: Image.file(
-                                File(_imagePath!),
-                                height: 200,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
+                              child: _imagePath!.startsWith('http') 
+                                ? Image.network(
+                                    _imagePath!,
+                                    height: 200,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                  File(_imagePath!),
+                                  height: 200,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
                             ),
                             Positioned(
                               top: 8,
@@ -258,7 +289,7 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
                       
                       // Publish Button
                       CustomButton(
-                        text: 'Publicar Artículo',
+                        text: widget.articleToEdit != null ? 'Actualizar Artículo' : 'Publicar Artículo',
                         onPressed: () => _submit(context),
                         width: double.infinity,
                         isLoading: isLoading,

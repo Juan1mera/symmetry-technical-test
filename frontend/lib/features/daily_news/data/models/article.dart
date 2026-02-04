@@ -6,6 +6,7 @@ import '../../../../core/constants/constants.dart';
 class ArticleModel extends ArticleEntity {
   const ArticleModel({
     int ? id,
+    String ? documentId,
     String ? author,
     String ? authorId,
     String ? title,
@@ -17,6 +18,7 @@ class ArticleModel extends ArticleEntity {
     String ? category,
   }): super(
     id: id,
+    documentId: documentId,
     author: author,
     authorId: authorId,
     title: title,
@@ -45,6 +47,7 @@ class ArticleModel extends ArticleEntity {
   factory ArticleModel.fromEntity(ArticleEntity entity) {
     return ArticleModel(
       id: entity.id,
+      documentId: entity.documentId,
       author: entity.author,
       authorId: entity.authorId,
       title: entity.title,

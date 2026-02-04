@@ -11,6 +11,8 @@ import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
 import 'features/daily_news/domain/usecases/create_article.dart';
+import 'features/daily_news/domain/usecases/delete_article.dart';
+import 'features/daily_news/domain/usecases/edit_article.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'features/daily_news/presentation/bloc/article/create/create_article_cubit.dart';
 import 'core/constants/constants.dart';
@@ -65,10 +67,18 @@ Future<void> initializeDependencies() async {
     CreateArticleUseCase(sl())
   );
 
+  sl.registerSingleton<DeleteArticleUseCase>(
+    DeleteArticleUseCase(sl())
+  );
+
+  sl.registerSingleton<EditArticleUseCase>(
+    EditArticleUseCase(sl())
+  );
+
 
   //Blocs
   sl.registerFactory<RemoteArticlesBloc>(
-    ()=> RemoteArticlesBloc(sl())
+    ()=> RemoteArticlesBloc(sl(),sl(),sl())
   );
 
   sl.registerFactory<LocalArticleBloc>(
@@ -76,7 +86,7 @@ Future<void> initializeDependencies() async {
   );
   
   sl.registerFactory<CreateArticleCubit>(
-    ()=> CreateArticleCubit(sl(), sl(), sl())
+    ()=> CreateArticleCubit(sl(), sl(), sl(), sl())
   );
 
   // Auth

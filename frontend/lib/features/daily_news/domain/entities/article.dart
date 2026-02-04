@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 
 class ArticleEntity extends Equatable{
   final int ? id;
+  final String ? documentId; // ID del documento en Firestore
+
   final String ? author;
   final String ? authorId; // ID del usuario para reglas de seguridad
   final String ? title;
@@ -14,6 +16,7 @@ class ArticleEntity extends Equatable{
 
   const ArticleEntity({
     this.id,
+    this.documentId,
     this.author,
     this.authorId,
     this.title,
@@ -29,6 +32,7 @@ class ArticleEntity extends Equatable{
   List < Object ? > get props {
     return [
       id,
+      documentId,
       author,
       authorId,
       title,

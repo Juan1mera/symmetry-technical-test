@@ -12,7 +12,6 @@ class FirebaseService {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       Reference ref = _storage.ref().child('media/articles/$fileName');
 
-      // For simplicity we assume jpeg/png or let firebase detect, but passing explicit metadata fixes the NPE bug
       SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
       
       UploadTask uploadTask = ref.putFile(file, metadata);
@@ -50,7 +49,8 @@ class FirebaseService {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         
         return ArticleModel(
-          id: data.containsKey('id') ? data['id'] : null, 
+          id: data.containsKey('id') ? data['id'] : null,
+          documentId: doc.id,
           author: data['author'] ?? 'Usuario Anónimo', // Nombre del autor para mostrar
           authorId: data['authorId'], // ID del usuario
           title: data['title'],
@@ -66,4 +66,35 @@ class FirebaseService {
       throw Exception('Failed to fetch articles: $e');
     }
   }
+
+  
+  Future<void> deleteArticle(String documentId) async {
+    try {
+      await _firestore.collection('articles').doc(documentId).delete();
+    } catch (e) {
+      throw Exception('Failed to delete article: $e');
+    }
+  }
+
+  Future<void> updateArticle(ArticleModel article) async {
+    try {
+      if (article.documentId == null) {
+        throw Exception('Article documentId is null');
+      }
+
+      Map<String, dynamic> articleData = {
+        'title': article.title,
+        'content': article.content,
+        'category': article.category,
+        'thumbnailURL': article.urlToImage ?? "",
+      };
+      
+      if (article.author != null) articleData['author'] = article.author;
+
+      await _firestore.collection('articles').doc(article.documentId).update(articleData);
+    } catch (e) {
+      throw Exception('Failed to update article: $e');
+    }
+  }
 }
+
