@@ -19,27 +19,28 @@ Técnicamente, me siento mucho más sólido en la implementación de capas de da
 - Implementar cacheo local (SQLite/Floor) para los artículos remotos.
 - Añadir funcionalidad de comentarios y "likes" para aumentar la interactividad.
 
-## 5. Prueba del Proyecto
-*(Aquí se incluirían los videos y capturas una vez desplegado)*
-> [!NOTE]
-> La aplicación permite crear, editar y eliminar noticias de forma fluida, con persistencia total en Firebase.
-
-## 6. Plus: Maximally Overdeliver
+## 5. Plus
 He ido más allá de los requisitos básicos de "Subir un Artículo":
 1. **Edición Completa:** Implementé el flujo de edición que permite cambiar títulos, contenido e imágenes de artículos existentes.
 2. **Eliminación Remota:** Añadí la capacidad de borrar artículos de Firestore desde la UI.
 3. **Validación de Reglas:** Configuré `firestore.rules` para validar que solo el autor de un artículo pueda editarlo o borrarlo.
-4. **Cumplimiento Estricto de Arquitectura:** Refactoricé el código para cumplir con el 100% de las `ARCHITECTURE_VIOLATIONS.md`, incluyendo el uso de `DataState` en todas las operaciones del repositorio.
+4. **Actualización de Dependencias:** Se actualizaron todas las dependencias del proyecto (`dio`, `retrofit`, `firebase`, `floor`, etc.) a sus versiones más recientes y estables, garantizando seguridad y compatibilidad con las últimas versiones de Flutter.
 
-## 7. Secciones Extra
-### Diagrama de Flujo de Artículo
-```mermaid
-graph LR
-    A[UI: CreateArticleScreen] --> B[Cubit: CreateArticleCubit]
-    B --> C[UseCase: CreateArticleUseCase]
-    C --> D[Repository: ArticleRepositoryImpl]
-    D --> E{Local Image?}
-    E -- Yes --> F[Storage: Upload Image]
-    F --> G[Firestore: Add Doc]
-    E -- No --> G
-```
+
+## 6. Documentación de Funcionamiento
+La aplicación sigue un flujo de datos reactivo basado en Clean Architecture:
+
+### Flujo de Usuario:
+1.  **Autenticación**: El usuario se registra o inicia sesión (Firebase Auth). Los datos se sincronizan con una colección `users` en Firestore.
+2.  **Noticias Externas**: Se consumen artículos de una API externa mediante `Retrofit`.
+3.  **Gestión de Artículos Propios**: 
+    - El usuario puede crear artículos seleccionando una imagen local (`image_picker`).
+    - La imagen se sube a `Firebase Storage`.
+    - La URL de la imagen y los metadatos se guardan en `Firestore`.
+4.  **Sincronización:** Los cambios en Firestore se reflejan inmediatamente en la UI mediante el uso de `Streams` o recargas controladas por `RemoteArticlesBloc`.
+
+### Componentes Clave:
+- **Core**: Contiene el `DataState` para manejar estados de éxito/error de forma genérica.
+- **Features**: Cada funcionalidad (Daily News, Auth) está encapsulada con su propia lógica de negocio y UI.
+
+
