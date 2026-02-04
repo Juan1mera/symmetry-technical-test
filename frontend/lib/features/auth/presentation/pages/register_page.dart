@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../config/theme/app_colors.dart';
+import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../injection_container.dart'; 
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -32,121 +35,170 @@ class _RegisterPageState extends State<RegisterPage> {
     return BlocProvider<AuthBloc>(
       create: (context) => sl<AuthBloc>(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Register')),
+        backgroundColor: AppColors.principal,
+        appBar: AppBar(
+          title: const Text('Crear Cuenta'),
+          backgroundColor: AppColors.principal,
+        ),
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthSuccess) {
               Navigator.pushReplacementNamed(context, '/'); 
             } else if (state is AuthFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error?.toString() ?? 'Error occurred')),
+                SnackBar(
+                  content: Text(state.error?.toString() ?? 'Error al registrarse'),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               );
             }
           },
           builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+            final isLoading = state is AuthLoading;
+
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40),
-                  const Icon(
-                    Icons.person_add_outlined,
-                    size: 80,
-                    color: Colors.blue,
+                  const SizedBox(height: 20),
+
+                  // Icon
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.secundario.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.person_add_outlined,
+                      size: 60,
+                      color: AppColors.secundario,
+                    ),
                   ),
+
                   const SizedBox(height: 24),
+
                   const Text(
-                    'Create Account',
+                    'Crear Cuenta',
                     style: TextStyle(
+                      fontFamily: 'Butler',
                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textoPrincipal,
                     ),
                   ),
+
+                  const SizedBox(height: 8),
+
+                  const Text(
+                    'Regístrate para empezar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textoSecundario,
+                    ),
+                  ),
+
                   const SizedBox(height: 32),
-                  TextField(
+
+                  // First Name
+                  CustomTextField(
                     controller: _firstNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'First Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person_outline),
-                    ),
+                    labelText: 'Nombre',
+                    hintText: 'Tu nombre',
+                    prefixIcon: Icons.person_outline,
+                    enabled: !isLoading,
                   ),
+
                   const SizedBox(height: 16),
-                  TextField(
+
+                  // Last Name
+                  CustomTextField(
                     controller: _lastNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Last Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person_outline),
-                    ),
+                    labelText: 'Apellido',
+                    hintText: 'Tu apellido',
+                    prefixIcon: Icons.person_outline,
+                    enabled: !isLoading,
                   ),
+
                   const SizedBox(height: 16),
-                  TextField(
+
+                  // Email
+                  CustomTextField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email_outlined),
-                    ),
+                    labelText: 'Email',
+                    hintText: 'tu@email.com',
+                    prefixIcon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
+                    enabled: !isLoading,
                   ),
+
                   const SizedBox(height: 16),
-                  TextField(
+
+                  // Password
+                  CustomTextField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock_outline),
-                    ),
+                    labelText: 'Contraseña',
+                    hintText: '••••••••',
+                    prefixIcon: Icons.lock_outline,
                     obscureText: true,
+                    enabled: !isLoading,
                   ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_firstNameController.text.trim().isEmpty ||
-                            _lastNameController.text.trim().isEmpty ||
-                            _emailController.text.trim().isEmpty ||
-                            _passwordController.text.trim().isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please fill all fields')),
-                          );
-                          return;
-                        }
-                        context.read<AuthBloc>().add(
-                              RegisterEvent(
-                                email: _emailController.text.trim(),
-                                password: _passwordController.text.trim(),
-                                firstName: _firstNameController.text.trim(),
-                                lastName: _lastNameController.text.trim(),
-                              ),
-                            );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Register',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
+
+                  const SizedBox(height: 32),
+
+                  // Register Button
+                  CustomButton(
+                    text: 'Crear Cuenta',
                     onPressed: () {
-                      Navigator.pushNamed(context, '/Login');
-                    }, 
-                    child: const Text("Already have an account? Login"),
+                      if (_firstNameController.text.trim().isEmpty ||
+                          _lastNameController.text.trim().isEmpty ||
+                          _emailController.text.trim().isEmpty ||
+                          _passwordController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('Por favor completa todos los campos'),
+                            backgroundColor: AppColors.secundario,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      context.read<AuthBloc>().add(
+                            RegisterEvent(
+                              email: _emailController.text.trim(),
+                              password: _passwordController.text.trim(),
+                              firstName: _firstNameController.text.trim(),
+                              lastName: _lastNameController.text.trim(),
+                            ),
+                          );
+                    },
+                    width: double.infinity,
+                    isLoading: isLoading,
+                    trailingIcon: Icons.arrow_forward,
                   ),
+
+                  const SizedBox(height: 16),
+
+                  // Login Link
+                  CustomButton(
+                    text: '¿Ya tienes cuenta? Inicia sesión',
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            Navigator.pushNamed(context, '/Login');
+                          },
+                    type: CustomButtonType.outline,
+                    width: double.infinity,
+                  ),
+
+                  const SizedBox(height: 40),
                 ],
               ),
             );
