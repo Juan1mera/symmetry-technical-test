@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:news_app_clean_architecture/config/theme/app_colors.dart';
+import 'package:news_app_clean_architecture/core/widgets/custom_button.dart';
+import 'package:news_app_clean_architecture/core/widgets/custom_text_area.dart';
+import 'package:news_app_clean_architecture/core/widgets/custom_text_field.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/create/create_article_state.dart';
 import 'package:news_app_clean_architecture/injection_container.dart';
@@ -57,144 +61,211 @@ class _CreateArticleScreenState extends State<CreateArticleScreen> {
         listener: (context, state) {
           if (state is CreateArticleSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Article Published!')),
+              SnackBar(
+                content: const Text('¡Artículo publicado exitosamente!'),
+                backgroundColor: AppColors.secundario,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             );
             Navigator.pop(context);
           } else if (state is CreateArticleError) {
              ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${state.message}')),
+              SnackBar(
+                content: Text('Error: ${state.message}'),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             );
           }
         },
         child: Scaffold(
+          backgroundColor: AppColors.principal,
           appBar: AppBar(
-            title: const Text('Publish Article', style: TextStyle(color: Colors.black)),
-            backgroundColor: Colors.white,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.black),
+            title: const Text('Publicar Artículo'),
+            backgroundColor: AppColors.principal,
           ),
           body: BlocBuilder<CreateArticleCubit, CreateArticleState>(
             builder: (context, state) {
-              if (state is CreateArticleLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+              final isLoading = state is CreateArticleLoading;
               
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: InputDecoration(
-                          hintText: 'Write your title here...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
+                      // Header Icon
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.secundario.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
                           ),
-                          filled: true,
-                          fillColor: Colors.grey[100],
+                          child: const Icon(
+                            Icons.edit_note,
+                            size: 48,
+                            color: AppColors.secundario,
+                          ),
                         ),
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        validator: (value) => value == null || value.isEmpty ? 'Title is required' : null,
                       ),
+
+                      const SizedBox(height: 24),
+
+                      const Center(
+                        child: Text(
+                          'Crear Nuevo Artículo',
+                          style: TextStyle(
+                            fontFamily: 'Butler',
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textoPrincipal,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Title
+                      CustomTextField(
+                        controller: _titleController,
+                        labelText: 'Título',
+                        hintText: 'Escribe el título de tu artículo...',
+                        prefixIcon: Icons.title,
+                        enabled: !isLoading,
+                        validator: (value) => value == null || value.isEmpty 
+                            ? 'El título es requerido' 
+                            : null,
+                      ),
+
                       const SizedBox(height: 16),
                       
                       // Category
-                      TextFormField(
-                         controller: _categoryController,
-                         decoration: InputDecoration(
-                           hintText: 'Category (Optional)',
-                           border: OutlineInputBorder(
-                             borderRadius: BorderRadius.circular(12),
-                             borderSide: BorderSide.none,
-                           ),
-                           filled: true,
-                           fillColor: Colors.grey[100],
-                         ),
+                      CustomTextField(
+                        controller: _categoryController,
+                        labelText: 'Categoría',
+                        hintText: 'Tecnología, Deportes, etc. (Opcional)',
+                        prefixIcon: Icons.category_outlined,
+                        enabled: !isLoading,
                       ),
-                      const SizedBox(height: 16),
 
-                      
-                      // Attach Image Button
-                      InkWell(
-                        onTap: _pickImage,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.purple.shade50,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.purple.shade100),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.camera_alt, color: Colors.purple),
-                              SizedBox(width: 8),
-                              Text('Attach Image', style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
+                      const SizedBox(height: 24),
+
+                      // Image Section
+                      const Text(
+                        'Imagen del artículo',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textoPrincipal,
                         ),
                       ),
+
+                      const SizedBox(height: 12),
+
+                      // Attach Image Button
+                      CustomButton(
+                        text: _imagePath == null 
+                            ? 'Seleccionar Imagen' 
+                            : 'Cambiar Imagen',
+                        onPressed: isLoading ? null : _pickImage,
+                        type: CustomButtonType.outline,
+                        leadingIcon: Icons.image_outlined,
+                        width: double.infinity,
+                        height: 50,
+                      ),
+
                       const SizedBox(height: 16),
                       
                       // Image Preview
                       if (_imagePath != null)
-                        Container(
-                          height: 200,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: FileImage(File(_imagePath!)),
-                              fit: BoxFit.cover,
+                        Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.file(
+                                File(_imagePath!),
+                                height: 200,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _imagePath = null;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.2),
+                                        blurRadius: 4,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                       const SizedBox(height: 16),
+
+                      const SizedBox(height: 24),
 
                       // Content
-                       TextFormField(
-                        controller: _contentController,
-                        maxLines: 10,
-                        decoration: InputDecoration(
-                          hintText: 'Add article here...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[100],
+                      const Text(
+                        'Contenido',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textoPrincipal,
                         ),
-                        validator: (value) => value == null || value.isEmpty ? 'Content is required' : null,
                       ),
-                      const SizedBox(height: 30),
+
+                      const SizedBox(height: 12),
+
+                      CustomTextArea(
+                        controller: _contentController,
+                        hintText: 'Escribe el contenido de tu artículo aquí...',
+                        minLines: 8,
+                        maxLines: 15,
+                        enabled: !isLoading,
+                        validator: (value) => value == null || value.isEmpty 
+                            ? 'El contenido es requerido' 
+                            : null,
+                      ),
+
+                      const SizedBox(height: 32),
                       
                       // Publish Button
-                      SizedBox(
+                      CustomButton(
+                        text: 'Publicar Artículo',
+                        onPressed: () => _submit(context),
                         width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: () => _submit(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple.shade200,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('Publish Article', style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
-                              SizedBox(width: 8), 
-                              Icon(Icons.arrow_forward, color: Colors.black),
-                            ],
-                          ),
-                        ),
+                        isLoading: isLoading,
+                        trailingIcon: Icons.send,
                       ),
+
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
