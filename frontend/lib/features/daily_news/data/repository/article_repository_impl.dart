@@ -44,7 +44,9 @@ class ArticleRepositoryImpl implements ArticleRepository {
     try {
       String? imageUrl = article.urlToImage;
       
-      // If the image is a local file path, upload it
+      // Check if the image is a local path. If it is, upload it to Firebase 
+      // Storage first to get a permanent URL. If don't do this, the image 
+      // will only be visible on the device that uploaded it.
       if (imageUrl != null && !imageUrl.startsWith('http')) {
          File imageFile = File(imageUrl);
          if (await imageFile.exists()) {
@@ -93,8 +95,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
     try {
       String? imageUrl = article.urlToImage;
       
-      // If the image is a local file path (starts with /), upload it. 
-      // Assuming http means remote.
+      // When editing, user only upload the image if it's a new local file.
+      // Remote URLs (starting with http) are kept as is.
       if (imageUrl != null && !imageUrl.startsWith('http') && imageUrl.isNotEmpty) {
          File imageFile = File(imageUrl);
          if (await imageFile.exists()) {
@@ -103,7 +105,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
       }
 
       ArticleModel updatedArticle = ArticleModel.fromEntity(article);
-      // We need to re-create the model with the new image URL if it changed
+      // need to re-create the model with the new image URL if it changed
       if (imageUrl != article.urlToImage) {
         updatedArticle = ArticleModel(
           id: article.id,

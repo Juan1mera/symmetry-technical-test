@@ -38,14 +38,14 @@ First, you will need to install and understand the technologies that this projec
 - [Flutter](https://docs.flutter.dev/)
 - [Flutter BLoc](https://bloclibrary.dev/)
 
-Please understand that it does not matter at all whether you know about these technologies or not. In fact, in an ideal world you don't know anything about them and can learn them over the course of the next 72 hours and deliver an incredible project. This is an ideal situation since it will allow you to showcase your capacity to learn new technologies fast and deliver good solutions with the knowledge aquired which is exactly what we are looking for.
+Please understand that it does not matter whether these technologies are already known. An incredible project can be delivered by learning them over the course of 72 hours. This situation allows for showcasing the capacity to learn new technologies quickly and deliver good solutions, which is the primary objective.
 
-After you have installed this technologies, you must learn them to be able to use them.
-For this, we have synthesized a group of resources that will make your learning process easier. 
+After installing these technologies, learning them is necessary before use.
+A group of resources has been synthesized to make the learning process easier. 
 This can of course be skipped (or replaced by other resources) if you already know these technologies.
 
 ## 1 | Learning the Technologies
-*Note: We recommend you learn these technolies in the order displayed in this list*
+*Recommendation: Learn the technologies in the order displayed in this list*
 1. Learn the Flutter framework:
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
 - [Online Documentation](https://flutter.dev/docs)
@@ -57,28 +57,27 @@ This can of course be skipped (or replaced by other resources) if you already kn
 - [BLoc Library Docs](https://bloclibrary.dev/)
 4. Learn Flutter Clean Architecture so that you know how to build a healthy codebase:
 - [Flutter Clean Architecture tutorial](https://www.youtube.com/watch?v=7V_P6dovixg)
-5. Read our project docs in order to understand the intricacies of our architecture, way of working, and contribution guidelines to see how our specific project works.
--  [Our Project Index](#index) with all the document files
+5. Read the project documentation to understand the intricacies of the architecture, workflow, and contribution guidelines.
+-  [Project Index](#index) with all the document files
 
 Now, if you are safe that you have learned all the required technologies and understood our project architecture and guidelines,  you may start your work...
 
-# 2 | The ASSIGNMENT... CHAN CHAN CHAAAANN (Dramatic Tone)
+# 2 | The ASSIGNMENT
 The app presented in this repository is a News App.
-However, you have found the following to be true: YOU ARE A JOURNALIST!
-And **as a journalist, you would love to upload your own articles to the app so that society can benefit from your genius**.
-Therefore, this will be the functionality that you will be writing over the next days.
+Functional requirements include the ability for journalists to upload their own articles to the app.
+This functionality is to be implemented over the next few days.
 
 ## 1. THE BACKEND 
-First, we will build the backend of the project. 
+Backend development comes first. 
 For this, you will use [Firebase Firestore](https://firebase.google.com/docs/firestore).
 
 #### 1.1 THE SCHEMA
 Before you even get to actually building the backend in Firestore, you must create the schema for the Articles you will store in the database.
 Here's a tutorial that will help you learn how to design schemas: [How to Design NoSQL DB Schemas](https://www.youtube.com/watch?v=QAqK-R9HUhc)
 
-##### Now, what will our schema need?
-Well, I will leave you to find out.
-I will say, however, that you must use Firebase Cloud Storage to store the article thumbnails in a specific folder inside Firebase Cloud Storage.
+##### Schema requirements:
+These requirements are to be determined.
+Firebase Cloud Storage must be used for article thumbnails in a specific folder.
 A reference to these folder will be stored in the Firebase Firestore. Eg:
 ```
 ArticleSchema = { 
@@ -87,7 +86,7 @@ ArticleSchema = {
   ...
 }
 ```
-*Hint: study the data we have in the articles from the API used in the app to design your own schema.*
+*Hint: Study the article data in the existing API to design the schema.*
 
 **Note: Please write this schema in backend/docs/DB_SCHEMA.md**
 

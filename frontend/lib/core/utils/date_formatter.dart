@@ -1,7 +1,7 @@
 
-/// Utilidad para formatear fechas en español
+/// Utility for formatting dates into human-readable strings
 class DateFormatter {
-  // Mapeo de nombres de meses en español
+  // Month names for display
   static const Map<int, String> _monthNames = {
     1: 'Enero',
     2: 'Febrero',
@@ -17,8 +17,8 @@ class DateFormatter {
     12: 'Diciembre',
   };
 
-  /// Formatea una fecha al formato: DD de MM, del AAAA, a las hh:mm
-  /// Ejemplo: "15 de Enero, del 2024, a las 14:30"
+  /// Formats a date into a specific format: DD of MM, YYYY, at HH:mm
+  /// Example: "15 of January, 2024, at 14:30"
   static String formatToSpanish(String dateString) {
     try {
       DateTime date = DateTime.parse(dateString);
@@ -31,7 +31,7 @@ class DateFormatter {
       
       return '$day de $month, del $year, a las $hour:$minute';
     } catch (e) {
-      // Si falla intentar con diferentes formatos
+      // If initial parsing fails, try splitting by the ISO separator
       try {
         final parts = dateString.split('T');
         if (parts.length >= 2) {
@@ -45,14 +45,14 @@ class DateFormatter {
           return '$day de $month, del $year, a las $hour:$minute';
         }
       } catch (e) {
-        // Si todo falla retorna la fecha original
+        // If all parsing attempts fail, return the original string
       }
       return dateString;
     }
   }
 
-  /// Formatea una fecha a un formato corto
-  /// Ejemplo: "15 Ene, 14:30"
+  /// Formats a date to a short preview version
+  /// Example: "15 Jan, 14:30"
   static String formatToShort(String dateString) {
     try {
       DateTime date = DateTime.parse(dateString);
@@ -68,6 +68,6 @@ class DateFormatter {
     }
   }
 
-  // Prevenir instanciación
+  // Private constructor to prevent instantiation
   DateFormatter._();
 }

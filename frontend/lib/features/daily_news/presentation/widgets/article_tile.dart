@@ -7,8 +7,8 @@ import '../../domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
   final ArticleEntity? article;
-  final bool? isRemovable; // Eliminar para los articulos guardaos
-  final bool isOwner; // editar y eliminar para artiuclos
+  final bool? isRemovable; // Whether the article can be removed from saved list
+  final bool isOwner; // Shows edit and delete buttons for the owner
   final void Function(ArticleEntity article)? onRemove;
   final void Function(ArticleEntity article)? onEdit;
   final void Function(ArticleEntity article)? onArticlePressed;
@@ -53,7 +53,7 @@ class ArticleWidget extends StatelessWidget {
   Widget _buildImageSection(BuildContext context) {
     return Stack(
       children: [
-        // Imagen
+        // Thumbnail image
         ClipRRect(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),

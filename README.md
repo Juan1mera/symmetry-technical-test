@@ -1,11 +1,11 @@
 # Applicant Showcase App
-Welcome to the repository for our Applicant Showcase App.
+Welcome to the Applicant Showcase App repository.
 
 ---
 
 #  Quick Start
 
-If you already have Flutter and Firebase CLI installed, follow these steps to get the project running locally:
+If Flutter and Firebase CLI are already installed, the project can be run locally using these steps:
 
 ### 1. Backend Setup (Firebase Emulator)
 The project is configured to work with the Firebase Local Emulator Suite.
@@ -16,7 +16,7 @@ firebase login
 firebase emulators:start
 ```
 > [!IMPORTANT]
-> **Verify Emulator Status**: Once the emulators are running, open [http://localhost:4000](http://localhost:4000) in your browser. You should see the Firestore and Storage emulators active.
+> **Verify Emulator Status**: Once the emulators are running, open [http://localhost:4000](http://localhost:4000) in a browser. Firestore and Storage emulators should be active.
 
 ### 2. Frontend Setup
 In a new terminal:

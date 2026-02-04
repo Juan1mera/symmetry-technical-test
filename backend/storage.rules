@@ -1,11 +1,11 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Regla para la carpeta especifica que pide el README
+    // Rule for the specific folder required by the assignment
     match /media/articles/{imageId} {
-      // Cualquiera puede ver la imagen
+      // Anyone can view the image
       allow read: if true;
-      // Solo usuarios logueados pueden subir, y debe ser una imagen
+      // Only logged-in users can upload, and it must be an image
       allow write: if request.resource.contentType.matches('image/.*');
     }
 

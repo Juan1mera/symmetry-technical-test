@@ -2,29 +2,29 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Función para validar que el articulo cumple el esquema diseñado
+    // Function to validate that the article matches the designed schema
     function isValidArticle() {
       let data = request.resource.data;
       return 
-        // 1. Campos obligatorios y tipos
+        // 1. Required fields and types
         data.title is string && data.title.size() > 0 &&
         data.content is string && data.content.size() > 0 &&
         data.category is string &&
         data.thumbnailURL is string &&
         
-        // 3. Integridad de datos (Metadata)
+        // 3. Data integrity (Metadata)
         data.authorId == request.auth.uid && 
         data.createdAt is timestamp;
     }
 
     match /articles/{articleId} {
-      // Cualquiera puede leer noticias
+      // Anyone can read news articles
       allow read: if true;
       
-      // Permitir crear si es válido y autenticado
+      // Allow creation if data is valid and user is authenticated
       allow create: if request.auth != null && isValidArticle();
       
-      // Permitir update/delete solo al dueño
+      // Only allow updates or deletion by the owner
       allow update, delete: if request.auth != null && resource.data.authorId == request.auth.uid;
     }
 

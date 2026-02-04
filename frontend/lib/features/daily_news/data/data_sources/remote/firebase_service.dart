@@ -51,8 +51,8 @@ class FirebaseService {
         return ArticleModel(
           id: data.containsKey('id') ? data['id'] : null,
           documentId: doc.id,
-          author: data['author'] ?? 'Usuario Anónimo', // Nombre del autor para mostrar
-          authorId: data['authorId'], // ID del usuario
+          author: data['author'] ?? 'Anonymous User', 
+          authorId: data['authorId'], 
           title: data['title'],
           description: data['content'],
           url: '', 

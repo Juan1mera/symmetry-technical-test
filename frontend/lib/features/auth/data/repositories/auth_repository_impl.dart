@@ -47,14 +47,14 @@ class AuthRepositoryImpl implements AuthRepository {
       
       final user = userCredential.user;
       if (user == null) {
-        return DataFailed(Exception('Error al iniciar sesión'));
+        return DataFailed(Exception('Failed to sign in'));
       }
 
-      // Verificar si el documento del usuario existe en Firestore
+      // Check if the user profile document exists in Firestore
       final userDoc = await _firestore.collection('users').doc(user.uid).get();
       
       if (!userDoc.exists) {
-        // Crear documento si no existe (para usuarios antiguos)
+        // If the document doesn't exist (e.g., for older accounts), create it now
         String firstName = '';
         String lastName = '';
         
@@ -91,7 +91,11 @@ class AuthRepositoryImpl implements AuthRepository {
     } on FirebaseAuthException catch (e) {
       return DataFailed(e);
     } catch (e) {
-        // Manejar bug de casteo de Firebase Auth (Pigeon)
+        // ////////////////////////////////////////////////////////////////////////
+        // This handles a known FlutterFire "Pigeon" bug where Authentication 
+        // works but returns a cast error instead of a user object.
+        // Catch it and get the user manually from the auth instance.
+        // ////////////////////////////////////////////////////////////////////////
         if (e.toString().contains('PigeonUserDetails') || e.toString().contains('PigeonUserInfo')) {
           final currentUser = _firebaseAuth.currentUser;
           return DataSuccess(UserEntity(
@@ -112,14 +116,15 @@ class AuthRepositoryImpl implements AuthRepository {
   ) async {
     User? user;
     try {
-      // 1. Crear usuario en Firebase Auth
+      // 1. Create a new user account in Firebase Auth
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       user = userCredential.user;
     } catch (e) {
-      // Manejar bug de casteo: el usuario suele crearse aunque de error
+      // Even if a Pigeon cast error occurs, the user is usually created successfully.
+      // Check the current user to verify if registration actually happened.
       if (e.toString().contains('PigeonUserDetails') || e.toString().contains('PigeonUserInfo')) {
         user = _firebaseAuth.currentUser;
       } else {
@@ -128,11 +133,11 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     if (user == null) {
-      return DataFailed(Exception('No se pudo crear el usuario en Auth'));
+      return DataFailed(Exception('Could not create user account'));
     }
 
     try {
-      // 2. Crear documento en Firestore
+      // 2. Create the user profile document in Firestore for database consistency
       await _firestore.collection('users').doc(user.uid).set({
         'email': email,
         'firstName': firstName,
@@ -142,7 +147,7 @@ class AuthRepositoryImpl implements AuthRepository {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      // 3. Actualizar perfil local de Auth (opcional)
+      // 3. Update the local Auth profile name (this is optional but helpful)
       try {
         final displayName = '$firstName $lastName'.trim();
         await user.updateDisplayName(displayName);
@@ -156,7 +161,8 @@ class AuthRepositoryImpl implements AuthRepository {
         lastName: lastName,
       ));
     } catch (e) {
-      // Si falla Firestore pero Auth funcionó, devolvemos éxito con los datos conocidos
+      // If Firestore fails but Auth succeeded, return success with current data.
+      // This ensures the user isn't blocked by minor database errors.
       return DataSuccess(UserEntity(
         uid: user.uid,
         email: email,
@@ -174,7 +180,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = _firebaseAuth.currentUser;
       if (user == null) {
-        return DataFailed(Exception('Sesión no iniciada'));
+        return DataFailed(Exception('User session not found'));
       }
 
       String currentFirstName = firstName ?? '';
@@ -232,7 +238,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = _firebaseAuth.currentUser;
       if (user == null) {
-        return DataFailed(Exception('Sesión no iniciada'));
+        return DataFailed(Exception('User session not found'));
       }
 
       final storageRef = _firebaseStorage

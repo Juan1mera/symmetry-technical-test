@@ -1,29 +1,29 @@
-# Reporte de Desarrollo Backend - Applicant Showcase App
+# Backend Development Report - Applicant Showcase App
 
-## 1. Introducción
-El backend de este proyecto fue diseñado para servir como una base sólida y segura para la gestión de artículos. El enfoque principal fue la integridad de los datos y la implementación de reglas de negocio directamente en la capa de persistencia mediante Firebase Firestore Rules.
+## 1. Introduction
+The backend of this project was designed to provide a secure and robust foundation for article management. The primary focus was on data integrity and the implementation of business rules directly within the persistence layer using Firebase Firestore Rules.
 
-## 2. Configuración y Emuladores
-Para cumplir con los principios de desarrollo profesional y asegurar que el proyecto sea fácilmente reproducible por otros desarrolladores, se optó por el uso exclusivo de **Firebase Local Emulator Suite**.
-- **Beneficios:** Entorno de desarrollo aislado, pruebas rápidas de reglas de seguridad y cero costos de infraestructura durante el desarrollo.
-- **Servicios Emulados:** Firestore, Cloud Storage y Auth.
+## 2. Configuration and Emulators
+To adhere to professional development principles and ensure easy reproducibility, the **Firebase Local Emulator Suite** was used exclusively.
+- **Benefits:** An isolated development environment, rapid testing of security rules, and zero infrastructure costs during development.
+- **Emulated Services:** Firestore, Cloud Storage, and Auth.
 
-## 3. Arquitectura de Datos (Firestore)
-Se diseñó un esquema NoSQL optimizado para la lectura de noticias:
-- **Colección `articles`:** Almacena los metadatos de las noticias. 
-    - Incluye integridad referencial hacia `Firebase Storage` mediante el campo `thumbnailURL`.
-    - Mapeo estricto del autor mediante `authorId` para control de acceso.
-- **Colección `users`:** Almacena perfiles de periodistas sincronizados con Firebase Auth.
+## 3. Data Architecture (Firestore)
+A NoSQL schema optimized for news retrieval was designed:
+- **`articles` Collection:** Stores metadata for articles. 
+    - Includes referential integrity with `Firebase Storage` via the `thumbnailURL` field.
+    - Strict author mapping using `authorId` for access control.
+- **`users` Collection:** Stores profiles of journalists synchronized with Firebase Auth.
 
-## 4. Seguridad e Integridad (Rules)
-Se implementaron reglas de seguridad robustas en `firestore.rules`:
-- **Validación de Esquema:** Mediante la función `isValidArticle()`, se asegura que cada documento contenga los campos obligatorios y los tipos de datos correctos antes de ser aceptado.
-- **Autoría:** Se garantiza que solo usuarios autenticados puedan crear contenido y que **solo el dueño original** de un artículo pueda editarlo o borrarlo, protegiendo así la integridad intelectual de los periodistas.
+## 4. Security and Integrity (Rules)w
+Robust security rules were implemented in `firestore.rules`:
+- **Schema Validation:** The `isValidArticle()` function ensures that every document contains the required fields and correct data types before acceptance.
+- **Ownership:** Access controls guarantee that only authenticated users can create content, and that **only the original author** of an article can edit or delete it, thereby protecting intellectual integrity.
 
-## 5. Almacenamiento (Storage)
-La configuración de Storage permite una gestión eficiente de los thumbnails:
-- Organización por carpetas: `media/articles/{filename}`.
-- Reglas de acceso que permiten la lectura pública pero restringen la carga a usuarios autenticados.
+## 5. Storage
+Storage configuration enables efficient management of thumbnails:
+- Folder organization: `media/articles/{filename}`.
+- Access rules allow public reading while restricting uploads to authenticated users.
 
-## 6. Reflexión Backend
-La combinación de validación de esquema en backend (Security Rules) y tipado estricto en frontend asegura que la aplicación sea resiliente a errores o intentos de manipulación malintencionada de datos.
+## 6. Backend Reflection
+The combination of backend schema validation (Security Rules) and strict typing in the frontend ensures the application is resilient against errors or malicious data manipulation attempts.
