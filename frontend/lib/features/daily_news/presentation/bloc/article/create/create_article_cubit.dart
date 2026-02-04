@@ -34,24 +34,26 @@ class CreateArticleCubit extends Cubit<CreateArticleState> {
           return;
       }
 
-      // Fetch user's display name from Firestore
-      String authorName = 'Usuario Anónimo';
+      // Obtener el nombre del autor desde Firestore
+      String authorName = '';
       try {
         final userDoc = await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           final data = userDoc.data();
-          final firstName = data?['firstName'] ?? '';
-          final lastName = data?['lastName'] ?? '';
+          final firstName = data?['firstName'] as String? ?? '';
+          final lastName = data?['lastName'] as String? ?? '';
           authorName = '$firstName $lastName'.trim();
-          
-          // If both names are empty, try displayName from auth
-          if (authorName.isEmpty) {
-            authorName = user.displayName ?? 'Usuario Anónimo';
-          }
         }
-      } catch (e) {
-        // If we can't fetch from Firestore, use displayName from auth
-        authorName = user.displayName ?? 'Usuario Anónimo';
+      } catch (_) {}
+
+      // Si falla Firestore o está vacío, intentar con el displayName de Auth
+      if (authorName.isEmpty) {
+        authorName = user.displayName ?? '';
+      }
+
+      // Fallback final si no hay nombre en ninguna fuente
+      if (authorName.isEmpty) {
+        authorName = 'Usuario Anónimo';
       }
 
       final article = ArticleEntity(
