@@ -9,37 +9,31 @@ class FirebaseService {
   
   Future<String> uploadImage(File file) async {
     try {
-      // print("Starting image upload...");
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       Reference ref = _storage.ref().child('media/articles/$fileName');
 
-      // print("Getting mime type...");
       // For simplicity we assume jpeg/png or let firebase detect, but passing explicit metadata fixes the NPE bug
       SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
       
       UploadTask uploadTask = ref.putFile(file, metadata);
       
-      // print("Waiting for upload...");
       TaskSnapshot snapshot = await uploadTask;
-      // print("Upload finished. Getting URL...");
       String url = await snapshot.ref.getDownloadURL();
-      // print("Got URL: $url");
       return url;
     } catch (e) {
-      // print("Error uploading image: $e");
       throw Exception('Failed to upload image: $e');
     }
   }
 
   Future<void> addArticle(ArticleModel article) async {
     try {
-      // print("Adding article to Firestore: ${article.title}");
       Map<String, dynamic> articleData = {
         'title': article.title,
         'content': article.content,
         'category': article.category,
-        'thumbnailURL': article.urlToImage,
-        'authorId': article.author,
+        'thumbnailURL': article.urlToImage ?? "", 
+        'author': article.author, 
+        'authorId': article.authorId, 
         'createdAt': FieldValue.serverTimestamp(),
       };
 
@@ -57,7 +51,8 @@ class FirebaseService {
         
         return ArticleModel(
           id: data.containsKey('id') ? data['id'] : null, 
-          author: data['authorId'],
+          author: data['author'] ?? 'Usuario Anónimo', // Nombre del autor para mostrar
+          authorId: data['authorId'], // ID del usuario
           title: data['title'],
           description: data['content'],
           url: '', 

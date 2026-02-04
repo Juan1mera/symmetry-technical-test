@@ -56,6 +56,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
       ArticleModel newArticle = ArticleModel(
         id: article.id,
         author: article.author,
+        authorId: article.authorId, 
         title: article.title,
         description: article.description,
         url: article.url,

@@ -7,6 +7,7 @@ class ArticleModel extends ArticleEntity {
   const ArticleModel({
     int ? id,
     String ? author,
+    String ? authorId,
     String ? title,
     String ? description,
     String ? url,
@@ -17,6 +18,7 @@ class ArticleModel extends ArticleEntity {
   }): super(
     id: id,
     author: author,
+    authorId: authorId,
     title: title,
     description: description,
     url: url,
@@ -29,6 +31,7 @@ class ArticleModel extends ArticleEntity {
   factory ArticleModel.fromJson(Map < String, dynamic > map) {
     return ArticleModel(
       author: map['author'] ?? "",
+      authorId: map['authorId'] ?? "",
       title: map['title'] ?? "",
       description: map['description'] ?? "",
       url: map['url'] ?? "",
@@ -43,6 +46,7 @@ class ArticleModel extends ArticleEntity {
     return ArticleModel(
       id: entity.id,
       author: entity.author,
+      authorId: entity.authorId,
       title: entity.title,
       description: entity.description,
       url: entity.url,

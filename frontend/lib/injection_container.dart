@@ -76,7 +76,7 @@ Future<void> initializeDependencies() async {
   );
   
   sl.registerFactory<CreateArticleCubit>(
-    ()=> CreateArticleCubit(sl(), sl())
+    ()=> CreateArticleCubit(sl(), sl(), sl())
   );
 
   // Auth
