@@ -59,4 +59,20 @@ class ArticleModel extends ArticleEntity {
       category: entity.category
     );
   }
+
+  ArticleEntity toEntity() {
+    return ArticleEntity(
+      id: id,
+      documentId: documentId,
+      author: author,
+      authorId: authorId,
+      title: title,
+      description: description,
+      url: url,
+      urlToImage: urlToImage,
+      publishedAt: publishedAt,
+      content: content,
+      category: category,
+    );
+  }
 }

@@ -12,9 +12,9 @@ abstract class ArticleRepository {
 
   Future < void > removeArticle(ArticleEntity article);
 
-  Future < void > createArticle(ArticleEntity article);
+  Future < DataState < void >> createArticle(ArticleEntity article);
   
-  Future < void > deleteRemoteArticle(ArticleEntity article);
+  Future < DataState < void >> deleteRemoteArticle(ArticleEntity article);
 
-  Future < void > editRemoteArticle(ArticleEntity article);
+  Future < DataState < void >> editRemoteArticle(ArticleEntity article);
 }

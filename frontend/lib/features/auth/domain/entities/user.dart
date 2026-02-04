@@ -17,4 +17,9 @@ class UserEntity extends Equatable {
 
   @override
   List<Object?> get props => [uid, email, firstName, lastName, profileImageUrl];
+
+  String? get fullName {
+    if (firstName == null && lastName == null) return null;
+    return '${firstName ?? ''} ${lastName ?? ''}'.trim();
+  }
 }

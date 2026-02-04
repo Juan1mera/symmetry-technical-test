@@ -62,6 +62,7 @@ class UserModel extends UserEntity {
     };
   }
 
+  @override
   String? get fullName {
     if (firstName == null && lastName == null) return null;
     return '${firstName ?? ''} ${lastName ?? ''}'.trim();

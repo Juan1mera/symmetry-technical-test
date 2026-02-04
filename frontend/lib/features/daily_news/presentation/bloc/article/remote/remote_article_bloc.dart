@@ -40,20 +40,16 @@ class RemoteArticlesBloc extends Bloc<RemoteArticlesEvent,RemoteArticlesState> {
   }
 
   void onDeleteArticle(DeleteArticle event, Emitter<RemoteArticlesState> emit) async {
-     try {
-       await _deleteArticleUseCase(params: event.article);
+     final result = await _deleteArticleUseCase(params: event.article);
+     if (result is DataSuccess) {
        add(const GetArticles());
-     } catch (e) {
-      //  print(e);
      }
   }
 
   void onUpdateArticle(UpdateArticle event, Emitter<RemoteArticlesState> emit) async {
-     try {
-       await _editArticleUseCase(params: event.article);
+     final result = await _editArticleUseCase(params: event.article);
+     if (result is DataSuccess) {
        add(const GetArticles());
-     } catch (e) {
-      //  print(e);
      }
   }
   

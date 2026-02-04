@@ -40,7 +40,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
   
   @override
-  Future<void> createArticle(ArticleEntity article) async {
+  Future<DataState<void>> createArticle(ArticleEntity article) async {
     try {
       String? imageUrl = article.urlToImage;
       
@@ -67,24 +67,30 @@ class ArticleRepositoryImpl implements ArticleRepository {
       );
 
       await _firebaseService.addArticle(newArticle);
-
+      return const DataSuccess(null);
     } catch (e) {
-      throw Exception('Failed to create article: $e');
+      return DataFailed(e is Exception ? e : Exception(e.toString()));
     }
   }
 
 
   @override
-  Future<void> deleteRemoteArticle(ArticleEntity article) {
-    if (article.documentId != null) {
-      return _firebaseService.deleteArticle(article.documentId!);
-    } else {
-      throw Exception('Article does not have a document ID');
+  Future<DataState<void>> deleteRemoteArticle(ArticleEntity article) async {
+    try {
+      if (article.documentId != null) {
+        await _firebaseService.deleteArticle(article.documentId!);
+        return const DataSuccess(null);
+      } else {
+        return DataFailed(Exception('Article does not have a document ID'));
+      }
+    } catch (e) {
+      return DataFailed(e is Exception ? e : Exception(e.toString()));
     }
   }
 
   @override
-  Future<void> editRemoteArticle(ArticleEntity article) async {
+  Future<DataState<void>> editRemoteArticle(ArticleEntity article) async {
+    try {
       String? imageUrl = article.urlToImage;
       
       // If the image is a local file path (starts with /), upload it. 
@@ -114,6 +120,10 @@ class ArticleRepositoryImpl implements ArticleRepository {
         );
       }
 
-    return _firebaseService.updateArticle(updatedArticle);
+      await _firebaseService.updateArticle(updatedArticle);
+      return const DataSuccess(null);
+    } catch (e) {
+      return DataFailed(e is Exception ? e : Exception(e.toString()));
+    }
   }
 }

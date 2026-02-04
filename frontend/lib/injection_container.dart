@@ -13,6 +13,7 @@ import 'features/daily_news/domain/usecases/save_article.dart';
 import 'features/daily_news/domain/usecases/create_article.dart';
 import 'features/daily_news/domain/usecases/delete_article.dart';
 import 'features/daily_news/domain/usecases/edit_article.dart';
+import 'features/daily_news/domain/usecases/get_current_user.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'features/daily_news/presentation/bloc/article/create/create_article_cubit.dart';
 import 'core/constants/constants.dart';
@@ -42,8 +43,18 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<NewsApiService>(NewsApiService(sl(), baseUrl: newsAPIBaseURL));
   sl.registerSingleton<FirebaseService>(FirebaseService());
 
+  // Firebase External Services
+  sl.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
+  sl.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
+  sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+
+  // Repositories
   sl.registerSingleton<ArticleRepository>(
     ArticleRepositoryImpl(sl(), sl())
+  );
+
+  sl.registerSingleton<AuthRepository>(
+    AuthRepositoryImpl(sl(), sl(), sl())
   );
   
   //UseCases
@@ -75,27 +86,8 @@ Future<void> initializeDependencies() async {
     EditArticleUseCase(sl())
   );
 
-
-  //Blocs
-  sl.registerFactory<RemoteArticlesBloc>(
-    ()=> RemoteArticlesBloc(sl(),sl(),sl())
-  );
-
-  sl.registerFactory<LocalArticleBloc>(
-    ()=> LocalArticleBloc(sl(),sl(),sl())
-  );
-  
-  sl.registerFactory<CreateArticleCubit>(
-    ()=> CreateArticleCubit(sl(), sl(), sl(), sl())
-  );
-
-  // Auth
-  sl.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
-  sl.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
-  sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
-
-  sl.registerSingleton<AuthRepository>(
-    AuthRepositoryImpl(sl(), sl(), sl())
+  sl.registerSingleton<GetCurrentUserUseCase>(
+    GetCurrentUserUseCase(sl())
   );
 
   sl.registerSingleton<LoginUseCase>(
@@ -112,6 +104,20 @@ Future<void> initializeDependencies() async {
 
   sl.registerSingleton<UploadProfileImageUseCase>(
     UploadProfileImageUseCase(sl())
+  );
+
+
+  //Blocs
+  sl.registerFactory<RemoteArticlesBloc>(
+    ()=> RemoteArticlesBloc(sl(),sl(),sl())
+  );
+
+  sl.registerFactory<LocalArticleBloc>(
+    ()=> LocalArticleBloc(sl(),sl(),sl())
+  );
+  
+  sl.registerFactory<CreateArticleCubit>(
+    ()=> CreateArticleCubit(sl(), sl(), sl())
   );
 
   sl.registerFactory<AuthBloc>(
